@@ -5,6 +5,7 @@ var y = canvas.height/2;
 var gravity = 0.098;
 var dx = 0;
 var dy = 0;
+var whichIf = 0;
 
 function drawBall() {
     ctx.beginPath();
@@ -20,14 +21,21 @@ function draw() {
     x += dx;
     if(( dy===0 || dy > 0) && (dy < 5.3 && dy >= 0)&&(y<canvas.height-10)){
         dy+=gravity; //add gravity
+        whichIf = 'add';
     } else if (y >= canvas.height-10 && dy > 0) {
         dy *= -0.50; //detect and bounce
-    } else if (dy < 0){ //remove gravity each frame
+        whichIf = 'bounce';
+    } else if (dy < 0 && y <= canvas.height-10){ //remove gravity each frame
         dy +=gravity;
-    } else {dy = 0;}
+        whichIf = 'deaccel';
+    } else {
+        dy = 0;
+        whichIf = 'accelzero';
+    }
     y += dy;
      ctx.fillText(`y:${y}`, 10, 10);
      ctx.fillText(`dy:${dy}`, 10, 20);
+     ctx.fillText(`whichIf:${whichIf}`, 10, 30);
 }
 
 setInterval(draw, 10);
