@@ -18,15 +18,16 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBall();
     x += dx;
-    if(( dy===0 || dy > 0) && (dy < 5.3 && dy >= 0)){
+    if(( dy===0 || dy > 0) && (dy < 5.3 && dy >= 0)&&(y<canvas.height-10)){
         dy+=gravity; //add gravity
-    } else if (y >= canvas.height-10) {
-        dy = -dy; //detect and bounce
-    } else { //remove gravity each frame
+    } else if (y >= canvas.height-10 && dy > 0) {
+        dy *= -0.50; //detect and bounce
+    } else if (dy < 0){ //remove gravity each frame
         dy +=gravity;
-    }
-    console.log(dy);
+    } else {dy = 0;}
     y += dy;
+     ctx.fillText(`y:${y}`, 10, 10);
+     ctx.fillText(`dy:${dy}`, 10, 20);
 }
 
 setInterval(draw, 10);
