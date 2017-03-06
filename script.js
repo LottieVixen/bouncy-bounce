@@ -27,12 +27,21 @@ var fps = {
     }
 };
 
+function changeLimit(e){
+    var x = e.clientX;
+    var y = e.clientY;
+    x -= canvas.offsetLeft;
+    jumpLimit = canvas.height - y;
+    //console.log(`x:${x},y:${y}`);
+}
+canvas.addEventListener("click", changeLimit, false)
+
 document.body.onkeyup = function(e){
     if(e.keyCode == 32){
-        console.log(`spacebar pressed @ ${y}`);
+        //console.log(`spacebar pressed @ ${y}`);
         if (y >= canvas.height-jumpLimit){
             dy = -5.3;
-            console.log("jump")
+            //console.log("jump")
         }
     }
 }
@@ -91,6 +100,7 @@ function draw(step) {
         ctx.fillText(`y:${y}`, 10, 10);
         ctx.fillText(`dy:${dy}`, 10, 20);
         ctx.fillText(`whichIf:${whichIf}`, 10, 30);
+        ctx.fillText(`jumpLimit:${jumpLimit}`,10,40);
         //ctx.fillText(`time:${Math.round(time)}`, 10, 40);
         ctx.fillText(`fps:${fps.getFPS()}`,10,50);
     }
