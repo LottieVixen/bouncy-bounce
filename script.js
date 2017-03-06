@@ -9,6 +9,7 @@ var whichIf = 0;
 var stopTime = 0;
 var time = 0; 
 var blur = 0;
+var jumpLimit = 30;
 var debug = document.getElementById('cb');
 var fps = {	
     startTime : 0,	
@@ -25,12 +26,28 @@ var fps = {
         return result;
     }
 };
+
+document.body.onkeyup = function(e){
+    if(e.keyCode == 32){
+        console.log(`spacebar pressed @ ${y}`);
+        if (y >= canvas.height-jumpLimit){
+            dy = -5.3;
+            console.log("jump")
+        }
+    }
+}
+
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, 10, 0, Math.PI*2);
     ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
+}
+
+function drawJumpZone() {
+    ctx.fillStyle = "#9cff96"
+    ctx.fillRect(0,canvas.height-jumpLimit,canvas.width,jumpLimit);
 }
 
 function draw(step) {
@@ -43,29 +60,31 @@ function draw(step) {
     oldArray.data[d] = Math.floor(oldArray.data[d]*blur);
     }
     ctx.putImageData(oldArray,0,0);*/
+    drawJumpZone();
     drawBall();
     x += dx;
     if(( dy===0 || dy > 0) && (dy < 5.3 && dy >= 0)&&(y<canvas.height-10)){
         dy+= delta*gravity; //add gravity
         whichIf = 'add';
     } else if (y >= canvas.height-10 && dy > 0) {
-        dy = -5.3; //detect and bounce
+        dy *= -0.75; //detect and bounce
         whichIf = 'bounce';
     } else if (dy < 0 && y <= canvas.height-10){ //remove gravity each frame
         dy += delta*gravity;
         whichIf = 'deaccel';
-    } /*else {
+    } else if (y > canvas.height-10){
         dy = 0;
+        y = 390;
         whichIf = 'accelzero';
-        if (stopTime === 0) {
+        /*if (stopTime === 0) {
             stopTime = step
         } else {
             if ((step - stopTime) > 1000){
                 stopTime = 0;
                 dy = -5.3; //send up again
             }
-        }
-    }*/
+        }*/
+    }
     y += dy;
     if (debug.checked) {
         //time = performance.now();
