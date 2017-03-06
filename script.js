@@ -34,7 +34,7 @@ function changeLimit(e){
     jumpLimit = canvas.height - y;
     //console.log(`x:${x},y:${y}`);
 }
-canvas.addEventListener("click", changeLimit, false)
+//canvas.addEventListener("click", changeLimit, false)
 
 document.body.onkeyup = function(e){
     if(e.keyCode == 32){
