@@ -11,6 +11,9 @@ var time = 0;
 var blur = 0;
 var jumpLimit = 30;
 var debug = document.getElementById('cb');
+var airTime = 0;
+var stationaryTime = 0;
+var scoreSquare = 0;
 var fps = {	
     startTime : 0,	
     frameNumber : 0,	
@@ -42,6 +45,12 @@ document.body.onkeyup = function(e){
         if (y >= canvas.height-jumpLimit){
             dy = -5.3;
             //console.log("jump")
+        } else {
+            if ((airTime)-100 > 0){
+            airTime -= 100;
+        } else {
+            airTime = 0;
+        }
         }
     }
 }
@@ -55,8 +64,14 @@ function drawBall() {
 }
 
 function drawJumpZone() {
-    ctx.fillStyle = "#9cff96"
+    ctx.fillStyle = "#9cff96";
     ctx.fillRect(0,canvas.height-jumpLimit,canvas.width,jumpLimit);
+}
+
+function drawScoreSquare() {
+    //ctx.fillStyle = "#b0ebf";
+    ctx.fillStyle = "purple";
+    ctx.fillRect((canvas.width/2)-(airTime/40),0,airTime/20,canvas.height);
 }
 
 function draw(step) {
@@ -69,22 +84,38 @@ function draw(step) {
     oldArray.data[d] = Math.floor(oldArray.data[d]*blur);
     }
     ctx.putImageData(oldArray,0,0);*/
+    drawScoreSquare();
     drawJumpZone();
     drawBall();
     x += dx;
     if(( dy===0 || dy > 0) && (dy < 5.3 && dy >= 0)&&(y<canvas.height-10)){
         dy+= delta*gravity; //add gravity
         whichIf = 'add';
+        airTime += 1;
+        stationaryTime = 0;
     } else if (y >= canvas.height-10 && dy > 0) {
         dy *= -0.75; //detect and bounce
         whichIf = 'bounce';
+        if (airTime > 0){
+            airTime -= 10;
+        } else {
+            airTime = 0;
+        }
+        stationaryTime = 0;
     } else if (dy < 0 && y <= canvas.height-10){ //remove gravity each frame
         dy += delta*gravity;
         whichIf = 'deaccel';
+        airTime += 1;
+        stationaryTime = 0;
     } else if (y > canvas.height-10){
         dy = 0;
         y = 390;
         whichIf = 'accelzero';
+        if (airTime > 0){
+            airTime -= 10;
+        } else {
+            airTime = 0;
+        }
         /*if (stopTime === 0) {
             stopTime = step
         } else {
@@ -93,6 +124,14 @@ function draw(step) {
                 dy = -5.3; //send up again
             }
         }*/
+    } else {
+        whichIf = 'stationary';
+        if (airTime > 0){
+            airTime -= 10;
+        } else {
+            airTime = 0;
+        }
+        stationaryTime += 1;
     }
     y += dy;
     if (debug.checked) {
@@ -104,8 +143,10 @@ function draw(step) {
         //ctx.fillText(`time:${Math.round(time)}`, 10, 40);
         ctx.fillText(`fps:${fps.getFPS()}`,10,50);
     }
-     lastStep = step;
-     requestAnimationFrame(draw);
+    ctx.fillText(`airTime:${airTime}`,10,60);
+    ctx.fillText(`stationaryTime:${stationaryTime}`,10,70);
+    lastStep = step;
+    requestAnimationFrame(draw);
 }
 
 lastStep = performance.now();
