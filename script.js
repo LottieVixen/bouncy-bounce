@@ -6,7 +6,25 @@ var gravity = 0.098;
 var dx = 0;
 var dy = 0;
 var whichIf = 0;
-
+var stopTime = 0;
+var time = 0; 
+var blur = 0;
+var debug = document.getElementById('cb');
+var fps = {	
+    startTime : 0,	
+    frameNumber : 0,	
+    getFPS : function(){
+        this.frameNumber++;
+        var d = new Date().getTime(),
+        currentTime = ( d - this.startTime ) / 1000,
+        result = Math.floor( ( this.frameNumber / currentTime ) );
+        if( currentTime > 1 ){
+            this.startTime = new Date().getTime();
+            this.frameNumber = 0;
+        }
+        return result;
+    }
+};
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, 10, 0, Math.PI*2);
@@ -15,27 +33,51 @@ function drawBall() {
     ctx.closePath();
 }
 
-function draw() {
+function draw(step) {
+    var delta = (step - lastStep)/10;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    /*var oldArray = ctx.getImageData(0,0,canvas.width,canvas.height);
+/   /count through only the alpha pixels
+    for(var d=3;d<oldArray.data.length;d+=4){
+    //dim it with some feedback, I'm using .9
+    oldArray.data[d] = Math.floor(oldArray.data[d]*blur);
+    }
+    ctx.putImageData(oldArray,0,0);*/
     drawBall();
     x += dx;
     if(( dy===0 || dy > 0) && (dy < 5.3 && dy >= 0)&&(y<canvas.height-10)){
-        dy+=gravity; //add gravity
+        dy+= delta*gravity; //add gravity
         whichIf = 'add';
     } else if (y >= canvas.height-10 && dy > 0) {
-        dy *= -0.50; //detect and bounce
+        dy = -5.3; //detect and bounce
         whichIf = 'bounce';
     } else if (dy < 0 && y <= canvas.height-10){ //remove gravity each frame
-        dy +=gravity;
+        dy += delta*gravity;
         whichIf = 'deaccel';
-    } else {
+    } /*else {
         dy = 0;
         whichIf = 'accelzero';
-    }
+        if (stopTime === 0) {
+            stopTime = step
+        } else {
+            if ((step - stopTime) > 1000){
+                stopTime = 0;
+                dy = -5.3; //send up again
+            }
+        }
+    }*/
     y += dy;
-     ctx.fillText(`y:${y}`, 10, 10);
-     ctx.fillText(`dy:${dy}`, 10, 20);
-     ctx.fillText(`whichIf:${whichIf}`, 10, 30);
+    if (debug.checked) {
+        //time = performance.now();
+        ctx.fillText(`y:${y}`, 10, 10);
+        ctx.fillText(`dy:${dy}`, 10, 20);
+        ctx.fillText(`whichIf:${whichIf}`, 10, 30);
+        //ctx.fillText(`time:${Math.round(time)}`, 10, 40);
+        ctx.fillText(`fps:${fps.getFPS()}`,10,50);
+    }
+     lastStep = step;
+     requestAnimationFrame(draw);
 }
 
-setInterval(draw, 10);
+lastStep = performance.now();
+requestAnimationFrame(draw);
