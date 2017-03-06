@@ -69,24 +69,13 @@ function drawJumpZone() {
 }
 
 function drawScoreSquare() {
-    //ctx.fillStyle = "#b0ebf";
-    ctx.fillStyle = "purple";
+    ctx.fillStyle = 'rgb(176, 235, 255)';
+    //ctx.fillStyle = "purple";
     ctx.fillRect((canvas.width/2)-(airTime/40),0,airTime/20,canvas.height);
 }
 
 function draw(step) {
     var delta = (step - lastStep)/10;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    /*var oldArray = ctx.getImageData(0,0,canvas.width,canvas.height);
-/   /count through only the alpha pixels
-    for(var d=3;d<oldArray.data.length;d+=4){
-    //dim it with some feedback, I'm using .9
-    oldArray.data[d] = Math.floor(oldArray.data[d]*blur);
-    }
-    ctx.putImageData(oldArray,0,0);*/
-    drawScoreSquare();
-    drawJumpZone();
-    drawBall();
     x += dx;
     if(( dy===0 || dy > 0) && (dy < 5.3 && dy >= 0)&&(y<canvas.height-10)){
         dy+= delta*gravity; //add gravity
@@ -134,6 +123,19 @@ function draw(step) {
         stationaryTime += 1;
     }
     y += dy;
+
+    //DRAW
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    /*var oldArray = ctx.getImageData(0,0,canvas.width,canvas.height);
+    /count through only the alpha pixels
+    for(var d=3;d<oldArray.data.length;d+=4){
+    //dim it with some feedback, I'm using .9
+    oldArray.data[d] = Math.floor(oldArray.data[d]*blur);
+    }
+    ctx.putImageData(oldArray,0,0);*/
+    drawScoreSquare();
+    drawJumpZone();
+    drawBall();
     if (debug.checked) {
         //time = performance.now();
         ctx.fillText(`y:${y}`, 10, 10);
@@ -145,6 +147,7 @@ function draw(step) {
     }
     ctx.fillText(`airTime:${airTime}`,10,60);
     ctx.fillText(`stationaryTime:${stationaryTime}`,10,70);
+
     lastStep = step;
     requestAnimationFrame(draw);
 }
