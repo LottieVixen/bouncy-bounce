@@ -42,15 +42,21 @@ function changeLimit(e){
 document.body.onkeyup = function(e){
     if(e.keyCode == 32){
         //console.log(`spacebar pressed @ ${y}`);
-        if (y >= canvas.height-jumpLimit){
-            dy = -5.3;
-            //console.log("jump")
+        if (y >= canvas.height-jumpLimit-10){
+            console.log(`jump @ y:${y}`)
+            if (y > canvas.height-20) {
+                dy = -10.6;
+            } else if (y > canvas.height-30) {
+                dy = -7.95;
+            } else {
+                dy = -5.3;
+            }
         } else {
             if ((airTime)-100 > 0){
-            airTime -= 100;
-        } else {
-            airTime = 0;
-        }
+                airTime -= 100;
+            } else {
+                airTime = 0;
+            }
         }
     }
 }
@@ -80,7 +86,7 @@ function draw(step) {
     if(( dy===0 || dy > 0) && (dy < 5.3 && dy >= 0)&&(y<canvas.height-10)){
         dy+= delta*gravity; //add gravity
         whichIf = 'add';
-        airTime += 1;
+        airTime += 10;
         stationaryTime = 0;
     } else if (y >= canvas.height-10 && dy > 0) {
         dy *= -0.75; //detect and bounce
@@ -94,7 +100,7 @@ function draw(step) {
     } else if (dy < 0 && y <= canvas.height-10){ //remove gravity each frame
         dy += delta*gravity;
         whichIf = 'deaccel';
-        airTime += 1;
+        airTime += 10;
         stationaryTime = 0;
     } else if (y > canvas.height-10){
         dy = 0;
